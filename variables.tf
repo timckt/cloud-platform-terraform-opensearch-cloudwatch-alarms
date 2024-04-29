@@ -155,7 +155,7 @@ variable "monitor_master_jvm_memory_pressure_too_high" {
 variable "monitor_shard" {
   description = "Enable monitoring of sharding of master nodes are too high. Only enable this wwhen dedicated master is enabled"
   type        = bool
-  default     = false
+  default     = true
 }
 
 ########################################
