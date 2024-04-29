@@ -308,25 +308,25 @@ resource "aws_cloudwatch_metric_alarm" "kms_key_inaccessible" {
 }
 
 
-resource "aws_cloudwatch_metric_alarm" "shards_active" {
-  count               = var.monitor_shard ? 1 : 0
-  alarm_name          = "ShardsActive >= 30000"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = 1
-  datapoints_to_alarm = "asdf"
-  metric_name         = "Shards.active"
-  namespace           = "AWS/ES"
-  period              = 60
-  statistic           = "Maximum"
-  threshold           = 30000
-  alarm_description   = "Email when ShardsActive >= 30000, 1 time within 1 minute"
-  alarm_actions       = [local.aws_sns_topic_arn]
-  ok_actions          = [local.aws_sns_topic_arn]
-  treat_missing_data  = "ignore"
-  tags                = var.tags
+# resource "aws_cloudwatch_metric_alarm" "shards_active" {
+#   count               = var.monitor_shard ? 1 : 0
+#   alarm_name          = "ShardsActive >= 30000"
+#   comparison_operator = "GreaterThanOrEqualToThreshold"
+#   evaluation_periods  = 1
+#   datapoints_to_alarm = "asdf" ######here
+#   metric_name         = "Shards.active"
+#   namespace           = "AWS/ES"
+#   period              = 60
+#   statistic           = "Maximum"
+#   threshold           = 30000
+#   alarm_description   = "Email when ShardsActive >= 30000, 1 time within 1 minute"
+#   alarm_actions       = [local.aws_sns_topic_arn]
+#   ok_actions          = [local.aws_sns_topic_arn]
+#   treat_missing_data  = "ignore"
+#   tags                = var.tags
 
-  dimensions = {
-    DomainName = var.domain_name
-    ClientId   = data.aws_caller_identity.default.account_id
-  }
-}
+#   dimensions = {
+#     DomainName = var.domain_name
+#     ClientId   = data.aws_caller_identity.default.account_id
+#   }
+# }
