@@ -320,8 +320,8 @@ resource "aws_cloudwatch_metric_alarm" "shards_active" {
   statistic           = "Maximum"
   threshold           = 30000
   alarm_description   = "Email when ShardsActive >= 30000, 1 time within 1 minute"
-  alarm_actions       = [aws_sns_topic.os_alert_topic.arn]
-  ok_actions          = [aws_sns_topic.os_alert_topic.arn]
+  alarm_actions       = [local.aws_sns_topic_arn]
+  ok_actions          = [local.aws_sns_topic_arn]
   treat_missing_data  = "ignore"
   tags                = var.tags
 
