@@ -7,6 +7,7 @@ locals {
     JVMMemoryPressureThreshold       = floor(min(max(var.jvm_memory_pressure_threshold, 0), 100))
     MasterCPUUtilizationThreshold    = floor(min(max(coalesce(var.master_cpu_utilization_threshold, var.cpu_utilization_threshold), 0), 100))
     MasterJVMMemoryPressureThreshold = floor(min(max(coalesce(var.master_jvm_memory_pressure_threshold, var.jvm_memory_pressure_threshold), 0), 100))
+    ShardActiveNumberThreshold       = floor(min(max(coalesce(var.shard_active_number_threshold), 0), 100))
   }
 }
 
@@ -115,7 +116,7 @@ resource "aws_cloudwatch_metric_alarm" "cluster_index_writes_blocked" {
   period              = var.alarm_cluster_index_writes_blocked_period
   statistic           = "Maximum"
   threshold           = "1"
-  alarm_description   = "Elasticsearch index writes being blocker over last ${floor(var.alarm_cluster_index_writes_blocked_periods * var.alarm_cluster_index_writes_blocked_period / 60)} minute(s)"
+  alarm_description   = "OpenSearch index writes being blocker over last ${floor(var.alarm_cluster_index_writes_blocked_periods * var.alarm_cluster_index_writes_blocked_period / 60)} minute(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
   treat_missing_data  = "ignore"
@@ -138,7 +139,7 @@ resource "aws_cloudwatch_metric_alarm" "insufficient_available_nodes" {
   period              = var.alarm_min_available_nodes_period
   statistic           = "Minimum"
   threshold           = local.thresholds["MinimumAvailableNodes"]
-  alarm_description   = "Elasticsearch nodes minimum < ${local.thresholds["MinimumAvailableNodes"]} for ${floor(var.alarm_min_available_nodes_periods * var.alarm_min_available_nodes_period / 60)} minutes(s)"
+  alarm_description   = "OpenSearch nodes minimum < ${local.thresholds["MinimumAvailableNodes"]} for ${floor(var.alarm_min_available_nodes_periods * var.alarm_min_available_nodes_period / 60)} minutes(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
   treat_missing_data  = "ignore"
@@ -161,7 +162,7 @@ resource "aws_cloudwatch_metric_alarm" "automated_snapshot_failure" {
   period              = var.alarm_automated_snapshot_failure_period
   statistic           = "Maximum"
   threshold           = "1"
-  alarm_description   = "Elasticsearch automated snapshot failed over last ${floor(var.alarm_automated_snapshot_failure_periods * var.alarm_automated_snapshot_failure_period / 60)} minute(s)"
+  alarm_description   = "OpenSearch automated snapshot failed over last ${floor(var.alarm_automated_snapshot_failure_periods * var.alarm_automated_snapshot_failure_period / 60)} minute(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
   treat_missing_data  = "ignore"
@@ -206,7 +207,7 @@ resource "aws_cloudwatch_metric_alarm" "jvm_memory_pressure_too_high" {
   period              = var.alarm_jvm_memory_pressure_too_high_period
   statistic           = "Maximum"
   threshold           = local.thresholds["JVMMemoryPressureThreshold"]
-  alarm_description   = "Elasticsearch JVM memory pressure is over ${local.thresholds["JVMMemoryPressureThreshold"]} over the last ${floor(var.alarm_jvm_memory_pressure_too_high_periods * var.alarm_jvm_memory_pressure_too_high_period / 60)} minute(s)"
+  alarm_description   = "OpenSearch JVM memory pressure is over ${local.thresholds["JVMMemoryPressureThreshold"]} over the last ${floor(var.alarm_jvm_memory_pressure_too_high_periods * var.alarm_jvm_memory_pressure_too_high_period / 60)} minute(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
   tags                = var.tags
@@ -250,7 +251,7 @@ resource "aws_cloudwatch_metric_alarm" "master_jvm_memory_pressure_too_high" {
   period              = var.alarm_master_jvm_memory_pressure_too_high_period
   statistic           = "Maximum"
   threshold           = local.thresholds["MasterJVMMemoryPressureThreshold"]
-  alarm_description   = "Elasticsearch JVM memory pressure is over ${local.thresholds["MasterJVMMemoryPressureThreshold"]} over the last ${floor(var.alarm_master_jvm_memory_pressure_too_high_periods * var.alarm_master_jvm_memory_pressure_too_high_period / 60)} minute(s)"
+  alarm_description   = "OpenSearch JVM memory pressure is over ${local.thresholds["MasterJVMMemoryPressureThreshold"]} over the last ${floor(var.alarm_master_jvm_memory_pressure_too_high_periods * var.alarm_master_jvm_memory_pressure_too_high_period / 60)} minute(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
   tags                = var.tags
@@ -272,7 +273,7 @@ resource "aws_cloudwatch_metric_alarm" "kms_key_error" {
   period              = var.alarm_kms_period
   statistic           = "Maximum"
   threshold           = "1"
-  alarm_description   = "Elasticsearch KMS Key Error failed over last ${floor(var.alarm_kms_periods * var.alarm_kms_period / 60)} minute(s)"
+  alarm_description   = "OpenSearch KMS Key Error failed over last ${floor(var.alarm_kms_periods * var.alarm_kms_period / 60)} minute(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
   treat_missing_data  = "ignore"
@@ -295,7 +296,7 @@ resource "aws_cloudwatch_metric_alarm" "kms_key_inaccessible" {
   period              = var.alarm_kms_period
   statistic           = "Maximum"
   threshold           = "1"
-  alarm_description   = "Elasticsearch KMS Key Inaccessible failed over last ${floor(var.alarm_kms_periods * var.alarm_kms_period / 60)} minute(s)"
+  alarm_description   = "OpenSearch KMS Key Inaccessible failed over last ${floor(var.alarm_kms_periods * var.alarm_kms_period / 60)} minute(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
   treat_missing_data  = "ignore"
@@ -308,25 +309,25 @@ resource "aws_cloudwatch_metric_alarm" "kms_key_inaccessible" {
 }
 
 
-# resource "aws_cloudwatch_metric_alarm" "shards_active" {
-#   count               = var.monitor_shard ? 1 : 0
-#   alarm_name          = "ShardsActive >= 30000"
-#   comparison_operator = "GreaterThanOrEqualToThreshold"
-#   evaluation_periods  = 1
-#   datapoints_to_alarm = "asdf" ######here
-#   metric_name         = "Shards.active"
-#   namespace           = "AWS/ES"
-#   period              = 60
-#   statistic           = "Maximum"
-#   threshold           = 30000
-#   alarm_description   = "Email when ShardsActive >= 30000, 1 time within 1 minute"
-#   alarm_actions       = [local.aws_sns_topic_arn]
-#   ok_actions          = [local.aws_sns_topic_arn]
-#   treat_missing_data  = "ignore"
-#   tags                = var.tags
+resource "aws_cloudwatch_metric_alarm" "shards_active" {
+  count               = var.monitor_shard ? 1 : 0
+  alarm_name          = "${var.alarm_name_prefix}OpenSearch-ShardActiveNumberTooHigh${var.alarm_name_postfix}"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = var.alarm_shard_active_number_too_high_periods
+  datapoints_to_alarm = var.alarm_shard_active_number_too_high_periods
+  metric_name         = "Shards.active"
+  namespace           = "AWS/ES"
+  period              = var.alarm_shard_active_number_too_high_period
+  statistic           = "Maximum"
+  threshold           = local.thresholds["ShardActiveNumberThreshold"]
+  alarm_description   = "OpenSearch active shard number is over ${local.thresholds["ShardActiveNumberThreshold"]} over the last ${floor(var.alarm_shard_active_number_too_high_periods * var.alarm_shard_active_number_too_high_period / 60)} minute(s)"
+  alarm_actions       = [local.aws_sns_topic_arn]
+  ok_actions          = [local.aws_sns_topic_arn]
+  treat_missing_data  = "ignore"
+  tags                = var.tags
 
-#   dimensions = {
-#     DomainName = var.domain_name
-#     ClientId   = data.aws_caller_identity.default.account_id
-#   }
-# }
+  dimensions = {
+    DomainName = var.domain_name
+    ClientId   = data.aws_caller_identity.default.account_id
+  }
+}

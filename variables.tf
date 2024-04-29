@@ -70,26 +70,8 @@ variable "tags" {
 ########################################
 # SNS-Related Variables
 ########################################
-variable "create_sns_topic" {
-  description = "If you don't want to create the SNS topic, set this to false.  It will use the sns_topic value directly"
-  type        = bool
-  default     = true
-}
-
 variable "sns_topic" {
   description = "SNS topic you want to specify. If leave empty, it will use a prefix and a timestampe appended"
-  type        = string
-  default     = ""
-}
-
-variable "sns_topic_prefix" {
-  description = "SNS topic prefix, only used if you're creating an SNS topic"
-  type        = string
-  default     = ""
-}
-
-variable "sns_topic_postfix" {
-  description = "SNS topic suffix, only used if you're creating an SNS topic"
   type        = string
   default     = ""
 }
@@ -251,6 +233,11 @@ variable "alarm_master_jvm_memory_pressure_too_high_period" {
   default     = 900
 }
 
+variable "alarm_shard_active_number_too_high_period" {
+  description = "The period of the JVM memory pressure of master nodes are too high should the statistics be applied in seconds"
+  type        = number
+  default     = 60
+}
 
 ########################################
 # Alarm thresholds
@@ -297,6 +284,11 @@ variable "master_jvm_memory_pressure_threshold" {
   default     = 80 # default same as `jvm_memory_pressure_threshold` in Percentage
 }
 
+variable "shard_active_number_threshold" {
+  description = "The maximum number of active primary and replica shards number"
+  type        = number
+  default     = 30000
+}
 
 ########################################
 # Evaluation periods for alarms
@@ -369,6 +361,12 @@ variable "alarm_master_jvm_memory_pressure_too_high_periods" {
 
 variable "alarm_kms_periods" {
   description = "The number of periods to alert that kms has failed.  Default: 1, raise this to be less noisy, as this can occur often for only 1 period"
+  type        = number
+  default     = 1
+}
+
+variable "alarm_shard_active_number_too_high_periods" {
+  description = "The number of periods to alert that active shard number is too high.  Default: 1, raise this to be less noisy, as this can occur often for only 1 period"
   type        = number
   default     = 1
 }
