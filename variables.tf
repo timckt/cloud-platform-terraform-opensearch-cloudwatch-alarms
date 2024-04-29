@@ -158,85 +158,97 @@ variable "monitor_shard" {
   default     = true
 }
 
+variable "monitor_master_reachable_from_node" {
+  description = "Enable monitoring of master nodes are running and reachable. Only enable this wwhen dedicated master is enabled"
+  type        = bool
+  default     = true
+}
+
 ########################################
 # Evaluation period time length (in seconds) for alarms
 ########################################
 variable "alarm_min_available_nodes_period" {
-  description = "The period of the minimum available nodes should the statistics be applied in seconds"
+  description = "The period of the minimum available nodes. The statistics should be applied in seconds"
   type        = number
   default     = 86400
 }
 
 variable "alarm_cluster_status_is_red_period" {
-  description = "The period of the cluster status is in red should the statistics be applied in seconds"
+  description = "The period of the cluster status is in red. The statistics should be applied in seconds"
   type        = number
   default     = 60
 }
 
 variable "alarm_cluster_status_is_yellow_period" {
-  description = "The period of the cluster status is in yellow should the statistics be applied in seconds"
+  description = "The period of the cluster status is in yellow. The statistics should be applied in seconds"
   type        = number
   default     = 60
 }
 
 variable "alarm_free_storage_space_too_low_period" {
-  description = "The period of the per-node free storage is too low should the statistics be applied in seconds"
+  description = "The period of the per-node free storage is too low. The statistics should be applied in seconds"
   type        = number
   default     = 60
 }
 
 variable "alarm_free_storage_space_total_too_low_period" {
-  description = "The period of the total cluster free storage is too low should the statistics be applied in seconds"
+  description = "The period of the total cluster free storage is too low. The statistics should be applied in seconds"
   type        = number
   default     = 60
 }
 
 variable "alarm_cluster_index_writes_blocked_period" {
-  description = "The period of the cluster index writes being blocked should the statistics be applied in seconds"
+  description = "The period of the cluster index writes being blocked. The statistics should be applied in seconds"
   type        = number
   default     = 300
 }
 
 variable "alarm_automated_snapshot_failure_period" {
-  description = "The period of the automated snapshot failure should the statistics be applied in seconds"
+  description = "The period of the automated snapshot failure. The statistics should be applied in seconds"
   type        = number
   default     = 60
 }
 
 variable "alarm_cpu_utilization_too_high_period" {
-  description = "The period of the CPU utilization is too high should the statistics be applied in seconds"
+  description = "The period of the CPU utilization is too high. The statistics should be applied in seconds"
   type        = number
   default     = 900
 }
 
 variable "alarm_jvm_memory_pressure_too_high_period" {
-  description = "The period of the JVM memory pressure is too high should the statistics be applied in seconds"
+  description = "The period of the JVM memory pressure is too high. The statistics should be applied in seconds"
   type        = number
   default     = 900
 }
 
 variable "alarm_kms_period" {
-  description = "The period of the KMS-related metrics should the statistics be applied in seconds"
+  description = "The period of the KMS-related metrics. The statistics should be applied in seconds"
   type        = number
   default     = 60
 }
 
 variable "alarm_master_cpu_utilization_too_high_period" {
-  description = "The period of the CPU utilization of master nodes are too high should the statistics be applied in seconds"
+  description = "The period of the CPU utilization of master nodes are too high. The statistics should be applied in seconds"
   type        = number
   default     = 900
 }
 
 variable "alarm_master_jvm_memory_pressure_too_high_period" {
-  description = "The period of the JVM memory pressure of master nodes are too high should the statistics be applied in seconds"
+  description = "The period of the JVM memory pressure of master nodes are too high. The statistics should be applied in seconds"
   type        = number
   default     = 900
 }
 
 variable "alarm_shard_active_number_too_high_period" {
-  description = "The period of the JVM memory pressure of master nodes are too high should the statistics be applied in seconds"
+  description = "The period of the active shard number are too high. The statistics should be applied in seconds"
   type        = number
   default     = 60
+}
+
+variable "alarm_master_reachable_from_node_period" {
+  description = "The period of the master node is unreachable. . The statistics should be applied in seconds"
+  type        = number
+  default     = 86400
 }
 
 ########################################
@@ -367,6 +379,12 @@ variable "alarm_kms_periods" {
 
 variable "alarm_shard_active_number_too_high_periods" {
   description = "The number of periods to alert that active shard number is too high.  Default: 1, raise this to be less noisy, as this can occur often for only 1 period"
+  type        = number
+  default     = 1
+}
+
+variable "alarm_master_reachable_from_node_periods" {
+  description = "The number of periods to alert that master node is unreachable.  Default: 1, raise this to be less noisy, as this can occur often for only 1 period"
   type        = number
   default     = 1
 }

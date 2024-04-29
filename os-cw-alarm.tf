@@ -331,3 +331,26 @@ resource "aws_cloudwatch_metric_alarm" "shards_active" {
     ClientId   = data.aws_caller_identity.default.account_id
   }
 }
+
+resource "aws_cloudwatch_metric_alarm" "master_reachable_from_node" {
+  count               = var.monitor_master_reachable_from_node ? (var.min_available_nodes > 0 ? 1 : 0) : 0
+  alarm_name          = "${var.alarm_name_prefix}OpenSearch-MasterNodeUnreachable${var.alarm_name_postfix}"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = var.alarm_master_reachable_from_node_periods
+  datapoints_to_alarm = var.alarm_master_reachable_from_node_periods
+  metric_name         = "MasterReachableFromNode"
+  namespace           = "AWS/ES"
+  period              = var.alarm_master_reachable_from_node_period
+  statistic           = "Maximum"
+  threshold           = "1"
+  alarm_description   = "OpenSearch Master Node is unreachable over the last ${floor(var.alarm_master_reachable_from_node_periods * var.alarm_master_reachable_from_node_period / 60)} minute(s)"
+  alarm_actions       = [local.aws_sns_topic_arn]
+  ok_actions          = [local.aws_sns_topic_arn]
+  treat_missing_data  = "ignore"
+  tags                = var.tags
+
+  dimensions = {
+    DomainName = var.domain_name
+    ClientId   = data.aws_caller_identity.default.account_id
+  }
+}
