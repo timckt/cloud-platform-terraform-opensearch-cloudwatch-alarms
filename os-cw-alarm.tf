@@ -4,6 +4,7 @@ locals {
     FreeStorageSpaceTotalThreshold   = floor(max(var.free_storage_space_total_threshold, 0))
     MinimumAvailableNodes            = floor(max(var.min_available_nodes, 0))
     ShardActiveNumberThreshold       = floor(max(var.shard_active_number_threshold, 0))
+    ThreadpoolWriteQueueThreshold    = floor(max(var.threadpool_write_queue_threshold, 0))
     CPUUtilizationThreshold          = floor(min(max(var.cpu_utilization_threshold, 0), 100))
     JVMMemoryPressureThreshold       = floor(min(max(var.jvm_memory_pressure_threshold, 0), 100))
     MasterCPUUtilizationThreshold    = floor(min(max(coalesce(var.master_cpu_utilization_threshold, var.cpu_utilization_threshold), 0), 100))
@@ -309,7 +310,7 @@ resource "aws_cloudwatch_metric_alarm" "kms_key_inaccessible" {
 }
 
 
-resource "aws_cloudwatch_metric_alarm" "shards_active" {
+resource "aws_cloudwatch_metric_alarm" "shards_active_too_high" {
   count               = var.monitor_shard ? 1 : 0
   alarm_name          = "${var.alarm_name_prefix}OpenSearch-ShardActiveNumberTooHigh${var.alarm_name_postfix}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -332,15 +333,15 @@ resource "aws_cloudwatch_metric_alarm" "shards_active" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "master_reachable_from_node" {
-  count               = var.monitor_master_reachable_from_node ? 1 : 0
+resource "aws_cloudwatch_metric_alarm" "unreachable_master_node" {
+  count               = var.monitor_unreachable_master_node ? 1 : 0
   alarm_name          = "${var.alarm_name_prefix}OpenSearch-MasterNodeUnreachable${var.alarm_name_postfix}"
   comparison_operator = "LessThanThreshold"
-  evaluation_periods  = var.alarm_master_reachable_from_node_periods
-  datapoints_to_alarm = var.alarm_master_reachable_from_node_periods
+  evaluation_periods  = var.alarm_unreachable_master_node_periods
+  datapoints_to_alarm = var.alarm_unreachable_master_node_periods
   metric_name         = "MasterReachableFromNode"
   namespace           = "AWS/ES"
-  period              = var.alarm_master_reachable_from_node_period
+  period              = var.alarm_unreachable_master_node_period
   statistic           = "Maximum"
   threshold           = "1"
   alarm_description   = "OpenSearch Master Node is unreachable over the last ${floor(var.alarm_master_reachable_from_node_periods * var.alarm_master_reachable_from_node_period / 60)} minute(s)"
@@ -355,3 +356,26 @@ resource "aws_cloudwatch_metric_alarm" "master_reachable_from_node" {
   }
 }
 
+# CloudWatch Alarm for ThreadpoolWriteQueue
+resource "aws_cloudwatch_metric_alarm" "threadpool_write_queue_too_high" {
+  count               = var.monitor_threadpool_write_queue ? 1 : 0
+  alarm_name          = "${var.alarm_name_prefix}OpenSearch-ThreadpoolWriteQueueTooHigh${var.alarm_name_postfix}"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = var.alarm_threadpool_write_queue_too_high_periods
+  datapoints_to_alarm = var.alarm_threadpool_write_queue_too_high_periods
+  metric_name         = "ThreadpoolWriteQueue"
+  namespace           = "AWS/ES"
+  period              = var.alarm_threadpool_write_queue_too_high_period
+  statistic           = "Average"
+  threshold           = local.thresholds["ThreadpoolWriteQueueThreshold"]
+  alarm_description   = "OpenSearch is experiencing high indexing concurrency over the last ${floor(var.alarm_threadpool_write_queue_too_high_periods * var.alarm_threadpool_write_queue_too_high_period / 60)} minute(s)"
+  alarm_actions       = [local.aws_sns_topic_arn]
+  ok_actions          = [local.aws_sns_topic_arn]
+  treat_missing_data  = "ignore"
+  tags                = var.tags
+
+  dimensions = {
+    DomainName = var.domain_name
+    ClientId   = data.aws_caller_identity.default.account_id
+  }
+}

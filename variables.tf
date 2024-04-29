@@ -158,7 +158,13 @@ variable "monitor_shard" {
   default     = true
 }
 
-variable "monitor_master_reachable_from_node" {
+variable "monitor_unreachable_master_node" {
+  description = "Enable monitoring of master nodes are running and reachable. Only enable this wwhen dedicated master is enabled"
+  type        = bool
+  default     = true
+}
+
+variable "monitor_threadpool_write_queue" {
   description = "Enable monitoring of master nodes are running and reachable. Only enable this wwhen dedicated master is enabled"
   type        = bool
   default     = true
@@ -245,10 +251,16 @@ variable "alarm_shard_active_number_too_high_period" {
   default     = 60
 }
 
-variable "alarm_master_reachable_from_node_period" {
-  description = "The period of the master node is unreachable. . The statistics should be applied in seconds"
+variable "alarm_unreachable_master_node_period" {
+  description = "The period of the master node is unreachable. The statistics should be applied in seconds"
   type        = number
   default     = 86400
+}
+
+variable "alarm_threadpool_write_queue_too_high_period" {
+  description = "The period of the threadpool write queue is too high. The statistics should be applied in seconds"
+  type        = number
+  default     = 60
 }
 
 ########################################
@@ -300,6 +312,12 @@ variable "shard_active_number_threshold" {
   description = "The maximum number of active primary and replica shards number"
   type        = number
   default     = 30000
+}
+
+variable "threadpool_write_queue_threshold" {
+  description = "The maximum number of cluster indexing concurrency"
+  type        = number
+  default     = 100
 }
 
 ########################################
@@ -383,8 +401,14 @@ variable "alarm_shard_active_number_too_high_periods" {
   default     = 1
 }
 
-variable "alarm_master_reachable_from_node_periods" {
+variable "alarm_unreachable_master_node_periods" {
   description = "The number of periods to alert that master node is unreachable.  Default: 1, raise this to be less noisy, as this can occur often for only 1 period"
+  type        = number
+  default     = 1
+}
+
+variable "alarm_threadpool_write_queue_too_high_periods" {
+  description = "The number of periods to alert that threadpool write queue is too high.  Default: 1, raise this to be less noisy, as this can occur often for only 1 period"
   type        = number
   default     = 1
 }
