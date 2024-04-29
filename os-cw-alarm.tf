@@ -344,7 +344,7 @@ resource "aws_cloudwatch_metric_alarm" "unreachable_master_node" {
   period              = var.alarm_unreachable_master_node_period
   statistic           = "Maximum"
   threshold           = "1"
-  alarm_description   = "OpenSearch Master Node is unreachable over the last ${floor(var.alarm_master_reachable_from_node_periods * var.alarm_master_reachable_from_node_period / 60)} minute(s)"
+  alarm_description   = "OpenSearch Master Node is unreachable over the last ${floor(var.alarm_unreachable_master_node_periods * var.alarm_unreachable_master_node_period / 60)} minute(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
   treat_missing_data  = "ignore"
