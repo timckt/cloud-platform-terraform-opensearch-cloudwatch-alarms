@@ -3,7 +3,7 @@ locals {
     FreeStorageSpaceThreshold        = floor(max(var.free_storage_space_threshold, 0))
     FreeStorageSpaceTotalThreshold   = floor(max(var.free_storage_space_total_threshold, 0))
     MinimumAvailableNodes            = floor(max(var.min_available_nodes, 0))
-    ShardActiveNumberThreshold       = floor(max(var.shard_active_number_threshold), 0)
+    ShardActiveNumberThreshold       = floor(max(var.shard_active_number_threshold, 0))
     CPUUtilizationThreshold          = floor(min(max(var.cpu_utilization_threshold, 0), 100))
     JVMMemoryPressureThreshold       = floor(min(max(var.jvm_memory_pressure_threshold, 0), 100))
     MasterCPUUtilizationThreshold    = floor(min(max(coalesce(var.master_cpu_utilization_threshold, var.cpu_utilization_threshold), 0), 100))
