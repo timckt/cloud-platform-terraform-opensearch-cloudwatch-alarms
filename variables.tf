@@ -137,19 +137,19 @@ variable "monitor_jvm_memory_pressure_too_high" {
 variable "monitor_kms" {
   description = "Enable monitoring of KMS-related metrics.  Only enable this when using KMS with ElasticSearch"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "monitor_master_cpu_utilization_too_high" {
   description = "Enable monitoring of CPU utilization of master nodes are too high. Only enable this when dedicated master is enabled"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "monitor_master_jvm_memory_pressure_too_high" {
   description = "Enable monitoring of JVM memory pressure of master nodes are too high. Only enable this wwhen dedicated master is enabled"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "monitor_shard" {
