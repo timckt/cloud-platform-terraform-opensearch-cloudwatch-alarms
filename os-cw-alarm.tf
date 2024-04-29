@@ -333,7 +333,7 @@ resource "aws_cloudwatch_metric_alarm" "shards_active" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "master_reachable_from_node" {
-  count               = var.monitor_master_reachable_from_node ? (var.min_available_nodes > 0 ? 1 : 0) : 0
+  count               = var.monitor_master_reachable_from_node ? 1 : 0
   alarm_name          = "${var.alarm_name_prefix}OpenSearch-MasterNodeUnreachable${var.alarm_name_postfix}"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = var.alarm_master_reachable_from_node_periods
@@ -354,3 +354,4 @@ resource "aws_cloudwatch_metric_alarm" "master_reachable_from_node" {
     ClientId   = data.aws_caller_identity.default.account_id
   }
 }
+
