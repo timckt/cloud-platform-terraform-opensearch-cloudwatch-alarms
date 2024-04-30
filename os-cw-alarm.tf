@@ -427,3 +427,42 @@ resource "aws_cloudwatch_metric_alarm" "threadpool_search_queue_max" {
     ClientId   = data.aws_caller_identity.default.account_id
   }
 }
+
+resource "aws_cloudwatch_metric_alarm" "threadpool_write_rejected" {
+  count               = var.monitor_threadpool_write_rejected ? 1 : 0
+  alarm_name          = "DIFF(ThreadpoolWriteRejected) >= 1"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = var.alarm_threadpool_write_rejected_too_high_periods
+  datapoints_to_alarm = var.alarm_threadpool_write_rejected_too_high_periods
+  metric_name         = "ThreadpoolWriteRejected"
+  namespace           = "AWS/ES"
+  period              = var.alarm_threadpool_write_rejected_too_high_period
+  statistic           = "Sum"
+  alarm_description   = "OpenSearch is experiencing high maximum searching concurrency over the last ${floor(var.alarm_threadpool_write_rejected_too_high_periods * var.alarm_threadpool_write_rejected_too_high_period / 60)} minute(s)"
+  alarm_actions       = [local.aws_sns_topic_arn]
+  ok_actions          = [local.aws_sns_topic_arn]
+  treat_missing_data  = "ignore"
+  tags                = var.tags
+
+  dimensions = {
+    DomainName = var.domain_name
+    ClientId   = data.aws_caller_identity.default.account_id
+  }
+
+  metric_query {
+    id          = "e1"
+    expression  = "DIFF(METRICS())"
+    label       = "Difference in ThreadpoolWriteRejected"
+    return_data = true
+  }
+
+  metric_query {
+    id = "m1"
+    metric {
+      metric_name = "ThreadpoolWriteRejected"
+      namespace   = "AWS/ES"
+      stat        = "Sum"
+    }
+    return_data = false
+  }
+}

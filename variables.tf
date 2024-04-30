@@ -176,6 +176,12 @@ variable "monitor_threadpool_search_queue" {
   default     = true
 }
 
+variable "monitor_threadpool_write_rejected" {
+  description = "Enable monitoring of threadpool write queue rejected number is increasing"
+  type        = bool
+  default     = true
+}
+
 ########################################
 # Evaluation period time length (in seconds) for alarms
 ########################################
@@ -271,6 +277,12 @@ variable "alarm_threadpool_write_queue_too_high_period" {
 
 variable "alarm_threadpool_search_queue_too_high_period" {
   description = "The period of the threadpool search queue is too high. The statistics should be applied in seconds"
+  type        = number
+  default     = 60
+}
+
+variable "alarm_threadpool_write_rejected_too_high_period" {
+  description = "The period of the threadpool write queue rejected is increasing. The statistics should be applied in seconds"
   type        = number
   default     = 60
 }
@@ -442,3 +454,11 @@ variable "alarm_threadpool_search_queue_too_high_periods" {
   type        = number
   default     = 1
 }
+
+variable "alarm_threadpool_write_rejected_too_high_periods" {
+  description = "The number of periods to alert that threadpool write queue rejected is increasing.  Default: 1, raise this to be less noisy, as this can occur often for only 1 period"
+  type        = number
+  default     = 1
+}
+
+
