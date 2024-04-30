@@ -477,6 +477,13 @@ resource "aws_cloudwatch_metric_alarm" "threadpool_write_rejected" {
   alarm_description   = "OpenSearch is experiencing threadpool write rejected over the last ${floor(var.alarm_threadpool_write_rejected_too_high_periods * var.alarm_threadpool_write_rejected_too_high_period / 60)} minute(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
+  treat_missing_data  = "ignore"
+  tags                = var.tags
+
+  dimensions = {
+    DomainName = var.domain_name
+    ClientId   = data.aws_caller_identity.default.account_id
+  }
 
   # Use a metric query to calculate the difference
   metric_query {
@@ -497,11 +504,5 @@ resource "aws_cloudwatch_metric_alarm" "threadpool_write_rejected" {
     }
     return_data = false
 
-    # Dimensions for the metric
-    dimension {
-      DomainName = var.domain_name
-      ClientId   = data.aws_caller_identity.default.account_id
-
-    }
   }
 }
