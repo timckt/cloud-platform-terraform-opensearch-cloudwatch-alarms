@@ -499,7 +499,7 @@ resource "aws_cloudwatch_metric_alarm" "threadpool_write_rejected" {
       unit        = "Count"
       period      = var.alarm_threadpool_write_rejected_too_high_period
 
-      dimension = {
+      dimensions = {
         DomainName = var.domain_name
         ClientId   = data.aws_caller_identity.default.account_id
       }
