@@ -490,7 +490,8 @@ resource "aws_cloudwatch_metric_alarm" "threadpool_write_rejected" {
   }
 
   metric_query {
-    id = "m1"
+    id          = "m1"
+    return_data = false
     metric {
       metric_name = "ThreadpoolWriteRejected"
       namespace   = "AWS/ES"
@@ -498,8 +499,8 @@ resource "aws_cloudwatch_metric_alarm" "threadpool_write_rejected" {
       unit        = "Count"
       period      = var.alarm_threadpool_write_rejected_too_high_period
       return_data = false
-
-      dimension {
+      
+      dimension   = {
         DomainName = var.domain_name
         ClientId   = data.aws_caller_identity.default.account_id
       }
