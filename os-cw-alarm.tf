@@ -497,12 +497,12 @@ resource "aws_cloudwatch_metric_alarm" "threadpool_write_rejected" {
       stat        = "Sum"
       unit        = "Count"
       period      = var.alarm_threadpool_write_rejected_too_high_period
-    }
-    return_data = false
+      return_data = false
 
-    dimension {
-      DomainName = var.domain_name
-      ClientId   = data.aws_caller_identity.default.account_id
+      dimension {
+        DomainName = var.domain_name
+        ClientId   = data.aws_caller_identity.default.account_id
+      }
     }
   }
 }
