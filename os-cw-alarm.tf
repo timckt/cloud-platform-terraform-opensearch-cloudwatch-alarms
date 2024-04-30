@@ -1,14 +1,16 @@
 locals {
   thresholds = {
-    FreeStorageSpaceThreshold        = floor(max(var.free_storage_space_threshold, 0))
-    FreeStorageSpaceTotalThreshold   = floor(max(var.free_storage_space_total_threshold, 0))
-    MinimumAvailableNodes            = floor(max(var.min_available_nodes, 0))
-    ShardActiveNumberThreshold       = floor(max(var.shard_active_number_threshold, 0))
-    ThreadpoolWriteQueueThreshold    = floor(max(var.threadpool_write_queue_threshold, 0))
-    CPUUtilizationThreshold          = floor(min(max(var.cpu_utilization_threshold, 0), 100))
-    JVMMemoryPressureThreshold       = floor(min(max(var.jvm_memory_pressure_threshold, 0), 100))
-    MasterCPUUtilizationThreshold    = floor(min(max(coalesce(var.master_cpu_utilization_threshold, var.cpu_utilization_threshold), 0), 100))
-    MasterJVMMemoryPressureThreshold = floor(min(max(coalesce(var.master_jvm_memory_pressure_threshold, var.jvm_memory_pressure_threshold), 0), 100))
+    FreeStorageSpaceThreshold            = floor(max(var.free_storage_space_threshold, 0))
+    FreeStorageSpaceTotalThreshold       = floor(max(var.free_storage_space_total_threshold, 0))
+    MinimumAvailableNodes                = floor(max(var.min_available_nodes, 0))
+    ShardActiveNumberThreshold           = floor(max(var.shard_active_number_threshold, 0))
+    ThreadpoolWriteQueueThreshold        = floor(max(var.threadpool_write_queue_threshold, 0))
+    ThreadpoolWriteQueueThresholdAverage = floor(max(var.threadpool_search_queue_average_threshold, 0))
+    ThreadpoolWriteQueueThresholdMax     = floor(max(var.threadpool_search_queue_max_threshold, 0))
+    CPUUtilizationThreshold              = floor(min(max(var.cpu_utilization_threshold, 0), 100))
+    JVMMemoryPressureThreshold           = floor(min(max(var.jvm_memory_pressure_threshold, 0), 100))
+    MasterCPUUtilizationThreshold        = floor(min(max(coalesce(var.master_cpu_utilization_threshold, var.cpu_utilization_threshold), 0), 100))
+    MasterJVMMemoryPressureThreshold     = floor(min(max(coalesce(var.master_jvm_memory_pressure_threshold, var.jvm_memory_pressure_threshold), 0), 100))
   }
 }
 
@@ -369,6 +371,52 @@ resource "aws_cloudwatch_metric_alarm" "threadpool_write_queue_too_high" {
   statistic           = "Average"
   threshold           = local.thresholds["ThreadpoolWriteQueueThreshold"]
   alarm_description   = "OpenSearch is experiencing high indexing concurrency over the last ${floor(var.alarm_threadpool_write_queue_too_high_periods * var.alarm_threadpool_write_queue_too_high_period / 60)} minute(s)"
+  alarm_actions       = [local.aws_sns_topic_arn]
+  ok_actions          = [local.aws_sns_topic_arn]
+  treat_missing_data  = "ignore"
+  tags                = var.tags
+
+  dimensions = {
+    DomainName = var.domain_name
+    ClientId   = data.aws_caller_identity.default.account_id
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "threadpool_search_queue_average" {
+  count               = var.monitor_threadpool_search_queue ? 1 : 0
+  alarm_name          = "${var.alarm_name_prefix}OpenSearch-ThreadpoolSearchQueueAverageTooHigh${var.alarm_name_postfix}"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = var.alarm_threadpool_search_queue_too_high_periods
+  datapoints_to_alarm = var.alarm_threadpool_search_queue_too_high_periods
+  metric_name         = "ThreadpoolSearchQueue"
+  namespace           = "AWS/ES"
+  period              = var.alarm_threadpool_search_queue_too_high_period
+  statistic           = "Average"
+  threshold           = local.thresholds["ThreadpoolWriteQueueThresholdAverage"]
+  alarm_description   = "OpenSearch is experiencing high average searching concurrency over the last ${floor(var.alarm_threadpool_search_queue_too_high_periods * var.alarm_threadpool_search_queue_too_high_period / 60)} minute(s)"
+  alarm_actions       = [local.aws_sns_topic_arn]
+  ok_actions          = [local.aws_sns_topic_arn]
+  treat_missing_data  = "ignore"
+  tags                = var.tags
+
+  dimensions = {
+    DomainName = var.domain_name
+    ClientId   = data.aws_caller_identity.default.account_id
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "threadpool_search_queue_max" {
+  count               = var.monitor_threadpool_search_queue ? 1 : 0
+  alarm_name          = "${var.alarm_name_prefix}OpenSearch-ThreadpoolSearchQueueMaxTooHigh${var.alarm_name_postfix}"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = var.alarm_threadpool_search_queue_too_high_periods
+  datapoints_to_alarm = var.alarm_threadpool_search_queue_too_high_periods
+  metric_name         = "ThreadpoolSearchQueue"
+  namespace           = "AWS/ES"
+  period              = var.alarm_threadpool_search_queue_too_high_period
+  statistic           = "Maximum"
+  threshold           = local.thresholds["ThreadpoolWriteQueueThresholdMax"]
+  alarm_description   = "OpenSearch is experiencing high maximum searching concurrency over the last ${floor(var.alarm_threadpool_search_queue_too_high_periods * var.alarm_threadpool_search_queue_too_high_period / 60)} minute(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
   treat_missing_data  = "ignore"

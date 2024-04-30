@@ -153,7 +153,7 @@ variable "monitor_master_jvm_memory_pressure_too_high" {
 }
 
 variable "monitor_shard" {
-  description = "Enable monitoring of sharding of master nodes are too high. Only enable this wwhen dedicated master is enabled"
+  description = "Enable monitoring of sharding of master nodes are too high."
   type        = bool
   default     = true
 }
@@ -165,7 +165,13 @@ variable "monitor_unreachable_master_node" {
 }
 
 variable "monitor_threadpool_write_queue" {
-  description = "Enable monitoring of master nodes are running and reachable. Only enable this wwhen dedicated master is enabled"
+  description = "Enable monitoring of threadpool write queue number is too high."
+  type        = bool
+  default     = true
+}
+
+variable "monitor_threadpool_search_queue" {
+  description = "Enable monitoring of threadpool search queue number is too high"
   type        = bool
   default     = true
 }
@@ -263,6 +269,12 @@ variable "alarm_threadpool_write_queue_too_high_period" {
   default     = 60
 }
 
+variable "alarm_threadpool_search_queue_too_high_period" {
+  description = "The period of the threadpool search queue is too high. The statistics should be applied in seconds"
+  type        = number
+  default     = 60
+}
+
 ########################################
 # Alarm thresholds
 ########################################
@@ -318,6 +330,18 @@ variable "threadpool_write_queue_threshold" {
   description = "The maximum number of cluster indexing concurrency"
   type        = number
   default     = 100
+}
+
+variable "threadpool_search_queue_average_threshold" {
+  description = "The average number of cluster searching concurrency"
+  type        = number
+  default     = 500
+}
+
+variable "threadpool_search_queue_max_threshold" {
+  description = "The maximum number of cluster searching concurrency"
+  type        = number
+  default     = 5000
 }
 
 ########################################
@@ -409,6 +433,12 @@ variable "alarm_unreachable_master_node_periods" {
 
 variable "alarm_threadpool_write_queue_too_high_periods" {
   description = "The number of periods to alert that threadpool write queue is too high.  Default: 1, raise this to be less noisy, as this can occur often for only 1 period"
+  type        = number
+  default     = 1
+}
+
+variable "alarm_threadpool_search_queue_too_high_periods" {
+  description = "The number of periods to alert that threadpool search queue is too high.  Default: 1, raise this to be less noisy, as this can occur often for only 1 period"
   type        = number
   default     = 1
 }
