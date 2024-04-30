@@ -176,6 +176,12 @@ variable "monitor_threadpool_search_queue" {
   default     = true
 }
 
+variable "monitor_threadpool_search_rejected" {
+  description = "Enable monitoring of threadpool search queue rejected number is increasing"
+  type        = bool
+  default     = true
+}
+
 variable "monitor_threadpool_write_rejected" {
   description = "Enable monitoring of threadpool write queue rejected number is increasing"
   type        = bool
@@ -281,7 +287,13 @@ variable "alarm_threadpool_search_queue_too_high_period" {
   default     = 60
 }
 
-variable "alarm_threadpool_write_rejected_too_high_period" {
+variable "alarm_threadpool_search_rejected_period" {
+  description = "The period of the threadpool search queue rejected is increasing. The statistics should be applied in seconds"
+  type        = number
+  default     = 60
+}
+
+variable "alarm_threadpool_write_rejected_period" {
   description = "The period of the threadpool write queue rejected is increasing. The statistics should be applied in seconds"
   type        = number
   default     = 60
@@ -354,6 +366,12 @@ variable "threadpool_search_queue_max_threshold" {
   description = "The maximum number of cluster searching concurrency"
   type        = number
   default     = 5000
+}
+
+variable "threadpool_search_rejected_threshold" {
+  description = "The number of cluster threadpool search rejected threshold. Value 1 means it is increasing"
+  type        = number
+  default     = 1
 }
 
 variable "threadpool_write_rejected_threshold" {
@@ -461,7 +479,13 @@ variable "alarm_threadpool_search_queue_too_high_periods" {
   default     = 1
 }
 
-variable "alarm_threadpool_write_rejected_too_high_periods" {
+variable "alarm_threadpool_search_rejected_periods" {
+  description = "The number of periods to alert that threadpool write queue rejected is increasing.  Default: 1, raise this to be less noisy, as this can occur often for only 1 period"
+  type        = number
+  default     = 1
+}
+
+variable "alarm_threadpool_write_rejected_periods" {
   description = "The number of periods to alert that threadpool write queue rejected is increasing.  Default: 1, raise this to be less noisy, as this can occur often for only 1 period"
   type        = number
   default     = 1
