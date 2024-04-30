@@ -356,6 +356,12 @@ variable "threadpool_search_queue_max_threshold" {
   default     = 5000
 }
 
+variable "threadpool_write_rejected_threshold" {
+  description = "The number of cluster threadpool write rejected threshold. Value 1 means it is increasing"
+  type        = number
+  default     = 1
+}
+
 ########################################
 # Evaluation periods for alarms
 ########################################
