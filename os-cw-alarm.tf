@@ -279,7 +279,7 @@ resource "aws_cloudwatch_metric_alarm" "kms_key_error" {
   alarm_description   = "OpenSearch KMS Key Error failed over last ${floor(var.alarm_kms_periods * var.alarm_kms_period / 60)} minute(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
-  treat_missing_data  = "ignore"
+  treat_missing_data  = "notBreaching"
   tags                = var.tags
 
   dimensions = {
@@ -302,7 +302,7 @@ resource "aws_cloudwatch_metric_alarm" "kms_key_inaccessible" {
   alarm_description   = "OpenSearch KMS Key Inaccessible failed over last ${floor(var.alarm_kms_periods * var.alarm_kms_period / 60)} minute(s)"
   alarm_actions       = [local.aws_sns_topic_arn]
   ok_actions          = [local.aws_sns_topic_arn]
-  treat_missing_data  = "ignore"
+  treat_missing_data  = "notBreaching"
   tags                = var.tags
 
   dimensions = {
