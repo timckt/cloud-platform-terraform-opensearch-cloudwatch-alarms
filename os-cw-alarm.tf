@@ -480,10 +480,6 @@ resource "aws_cloudwatch_metric_alarm" "threadpool_write_rejected" {
   treat_missing_data  = "ignore"
   tags                = var.tags
 
-  dimensions = {
-    DomainName = var.domain_name
-    ClientId   = data.aws_caller_identity.default.account_id
-  }
 
   # Use a metric query to calculate the difference
   metric_query {
@@ -504,5 +500,9 @@ resource "aws_cloudwatch_metric_alarm" "threadpool_write_rejected" {
     }
     return_data = false
 
+    dimension {
+      DomainName = var.domain_name
+      ClientId   = data.aws_caller_identity.default.account_id
+    }
   }
 }
